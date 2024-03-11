@@ -2,16 +2,15 @@ package be.kuleuven.candycrush.view;
 
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
-import be.kuleuven.candycrush.model.Model;
 
 import java.util.Iterator;
 
 public class candyCrushView extends Region {
     private int widthCandy;
     private int heightCandy;
-    private Model model;
+    private be.kuleuven.candycrush.model.model model;
 
-    public candyCrushView(Model model) {
+    public candyCrushView(be.kuleuven.candycrush.model.model model) {
         this.model = model;
         widthCandy = 20;
         heightCandy = 20;

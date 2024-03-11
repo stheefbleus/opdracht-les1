@@ -7,7 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import be.kuleuven.candycrush.model.Model;
+import be.kuleuven.candycrush.model.model;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class candyCrushController {
     @FXML
     private AnchorPane speelbord;
     @FXML
-    private Model model;
+    private be.kuleuven.candycrush.model.model model;
     @FXML
     private be.kuleuven.candycrush.view.candyCrushView candyCrushView;
     @FXML
@@ -25,7 +25,7 @@ public class candyCrushController {
 
     @FXML
     public void initialize(){
-        model = new Model("Stef");
+        model = new model("Default Player");
         candyCrushView = new candyCrushView(model);
         speelbord.getChildren().add(candyCrushView);
         speelbord.setOnMouseClicked(this::klik);

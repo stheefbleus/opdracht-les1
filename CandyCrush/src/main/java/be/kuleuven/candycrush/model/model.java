@@ -3,14 +3,14 @@ package be.kuleuven.candycrush.model;
 import java.util.ArrayList;
 
 import be.kuleuven.CheckNeighboursInGrid;
-public class Model {
+public class model {
     private String Speler;
     private ArrayList<Integer> speelbord;
     private int width;
     private int height;
     private int Score;
 
-    public Model(String speler){
+    public model(String speler){
         this.Speler = speler;
         speelbord = new ArrayList<>();
         width = 10;
@@ -22,7 +22,7 @@ public class Model {
 
     public void genSpeelbord() {
         for (int i= 0;i < width*height;i++){
-            int randomGetal = (int) (Math.random()*5);
+            int randomGetal = (int) (1+Math.random()*5);
             speelbord.add(randomGetal);
         }
     }
@@ -35,11 +35,6 @@ public class Model {
         speelbord.set(index,(int) (Math.random()*6));
     }
 
-
-    public static void main(String[] args) {
-        Model m = new Model("stef");
-    }
-
     public String getSpeler() {
         return Speler;
     }
@@ -50,6 +45,10 @@ public class Model {
 
     public int getWidth() {
         return width;
+    }
+
+    public int getSpeelbordValueOfIndex(int index){
+       return speelbord.get(index);
     }
 
     public int getHeight() {

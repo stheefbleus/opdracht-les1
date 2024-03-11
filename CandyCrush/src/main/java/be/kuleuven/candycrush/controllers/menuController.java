@@ -1,6 +1,7 @@
 package be.kuleuven.candycrush.controllers;
 
 import be.kuleuven.candycrush.HelloApplication;
+import be.kuleuven.candycrush.model.model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +13,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MenuController {
+public class menuController {
+    @FXML
+    private be.kuleuven.candycrush.model.model model;
     @FXML
     private AnchorPane menu;
     @FXML
@@ -22,10 +25,10 @@ public class MenuController {
 
     @FXML
     public void initialize(){
+        model model = new model("Default Player");
         btn.setText("Start");
-        if(speler.getText() != ""){
-            btn.setOnAction(this::inDruk);
-        }
+        btn.setOnAction(this::inDruk);
+        speler.setPromptText(model.getSpeler());
     }
 
     public void inDruk(ActionEvent e) {
@@ -33,6 +36,7 @@ public class MenuController {
             FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("candyCrush-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 600, 400);
             Stage stage = (Stage) btn.getScene().getWindow();
+            stage.setTitle("current player: "+ speler.getText());
             stage.setScene(scene);
             stage.show();
         } catch (IOException io) {
