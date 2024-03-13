@@ -56,10 +56,9 @@ class modelTest {
         assert(model.getSpeelbordValueOfIndex(4) == 5);
     }
     @Test
-    public void testWhenSpelerIsSet_ThatSpelerIsThatSpeler(){
+    public void testWhenSpelerIsSet_ThatSpelerIsThatSpeler() {
         model model = new model("Stef");
-        assert(model.getSpeler() == "Stef");
+        assert (model.getSpeler() == "Stef");
     }
-
 
 }
