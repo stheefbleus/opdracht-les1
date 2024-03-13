@@ -29,10 +29,10 @@ jobs:
 
 
     - name: Build with Gradle Wrapper
-      run: cd candycrush && ./gradlew build
+      run: cd CandyCrush && ./gradlew build
 
     - name: test with Gradle Wrapper
-      run: cd candycrush && ./gradlew test
+      run: cd CandyCrush && ./gradlew test
 
     - name: Jar with Gradle Wrapper
-      run: cd candycrush && ./gradlew jar
+      run: cd CandyCrush && ./gradlew jar
