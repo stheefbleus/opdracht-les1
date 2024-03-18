@@ -10,6 +10,26 @@ public class model {
     private int height;
     private int Score;
 
+    public record boardSize(int width,int height){
+        public boardSize {
+            if (width <= 0) throw new IllegalArgumentException("width must not be 0");
+            if (height <= 0) throw new IllegalArgumentException("height must not be 0");
+        }
+    }
+    public record position(int rijNummer, int kolomNummer, boardSize boardSize){
+        public position {
+            if (rijNummer <=0 || rijNummer >= boardSize.height()){
+                throw new IllegalArgumentException("rij moet in de board-hoogte zijn");
+            }
+            if (kolomNummer <=0 || kolomNummer >= boardSize.width()){
+                throw new IllegalArgumentException("rij moet in de board-breedte zijn");
+            }
+        }
+        public int toIndex(){
+            return rijNummer * boardSize.width() + kolomNummer;
+        }
+    }
+
     public model(String speler){
         this.Speler = speler;
         speelbord = new ArrayList<>();
@@ -18,6 +38,7 @@ public class model {
         Score = 0;
         genSpeelbord();
     }
+
 
 
     public void genSpeelbord() {
