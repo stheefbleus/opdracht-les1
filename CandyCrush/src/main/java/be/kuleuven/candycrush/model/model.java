@@ -6,14 +6,20 @@ import be.kuleuven.CheckNeighboursInGrid;
 public class model {
     private String Speler;
     private ArrayList<Integer> speelbord;
-    private int width;
-    private int height;
     private int Score;
+    private boardSize board;
 
     public record boardSize(int width,int height){
         public boardSize {
             if (width <= 0) throw new IllegalArgumentException("width must not be 0");
             if (height <= 0) throw new IllegalArgumentException("height must not be 0");
+        }
+        Iterable<position> positions(){
+            ArrayList<position> positions = new ArrayList<>();
+            for (int i = 0; i < width*height; i++){
+                positions.add(position.fromIndex(i,this));
+            }
+            return positions;
         }
     }
     public record position(int rijNummer, int kolomNummer, boardSize boardSize){
@@ -28,13 +34,34 @@ public class model {
         public int toIndex(){
             return rijNummer * boardSize.width() + kolomNummer;
         }
+        static position fromIndex(int index, boardSize size){
+            if( index > size.height() * size.width()){
+                throw new IllegalArgumentException("index bestaat niet");
+            }
+            else{
+                int rij = index/ size.width();
+                int kolom = index % size.width();
+                return new position(rij,kolom,size);
+            }
+        }
+        Iterable<position> neighborPositions(){
+            ArrayList<position> neighbors = new ArrayList<>();
+            if (rijNummer > 0) neighbors.add(new position(rijNummer-1,kolomNummer,boardSize));
+            if (rijNummer < boardSize.height()-1) neighbors.add(new position(rijNummer+1,kolomNummer,boardSize));
+            if (kolomNummer > 0) neighbors.add(new position(rijNummer,kolomNummer-1,boardSize));
+            if (kolomNummer < boardSize.width()-1) neighbors.add(new position(rijNummer,kolomNummer+1,boardSize));
+            return neighbors;
+        }
+        boolean isLastColumn(){
+            return kolomNummer == boardSize.width()-1;
+        }
+
     }
 
     public model(String speler){
         this.Speler = speler;
         speelbord = new ArrayList<>();
-        width = 10;
-        height = 10;
+        board = new boardSize(10,10);
         Score = 0;
         genSpeelbord();
     }
@@ -42,13 +69,13 @@ public class model {
 
 
     public void genSpeelbord() {
-        for (int i= 0;i < width*height;i++){
+        for (int i= 0;i < board.width()*board.height();i++){
             int randomGetal = (int) (1+Math.random()*5);
             speelbord.add(randomGetal);
         }
     }
     public ArrayList<Integer> checkBuren(int index){
-        ArrayList<Integer> buren = (ArrayList<Integer>) CheckNeighboursInGrid.getSameNeighboursIds(speelbord,width,height,index);
+        ArrayList<Integer> buren = (ArrayList<Integer>) CheckNeighboursInGrid.getSameNeighboursIds(speelbord,board.width(),board.height(),index);
         return buren;
     }
 
@@ -64,17 +91,10 @@ public class model {
         return speelbord;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
     public int getSpeelbordValueOfIndex(int index){
        return speelbord.get(index);
     }
 
-    public int getHeight() {
-        return height;
-    }
     public int getScore() {
         return Score;
     }
@@ -83,6 +103,9 @@ public class model {
         Score = score;
     }
 
+    public boardSize getBoard() {
+        return board;
+    }
     public void reset() {
         speelbord.clear();
         setScore(0);
