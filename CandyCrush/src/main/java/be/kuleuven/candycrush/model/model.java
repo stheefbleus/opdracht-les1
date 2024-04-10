@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import be.kuleuven.CheckNeighboursInGrid;
 public class model {
     private String Speler;
-    private ArrayList<Integer> speelbord;
+    private ArrayList<Candy> speelbord;
     private int Score;
     private boardSize board;
 
@@ -57,6 +57,16 @@ public class model {
         }
 
     }
+    public sealed interface Candy permits NormalCandy,gummyBeertje,jollyRanger,dropVeter,Pèche{}
+    public record NormalCandy(int color) implements Candy{
+        public NormalCandy{
+            if (color < 0 || color > 3) throw new IllegalArgumentException("color must be 0,1,2 or 3");
+        }
+    }
+    public record gummyBeertje() implements Candy{}
+    public record jollyRanger() implements Candy{}
+    public record dropVeter() implements Candy{}
+    public record Pèche() implements Candy{}
 
     public model(String speler){
         this.Speler = speler;
@@ -66,13 +76,55 @@ public class model {
         genSpeelbord();
     }
 
-
-
     public void genSpeelbord() {
         for (int i= 0;i < board.width()*board.height();i++){
             int randomGetal = (int) (1+Math.random()*5);
-            speelbord.add(randomGetal);
+            Candy candy;
+            switch(randomGetal) {
+                case 1:
+                    candy = new NormalCandy((int) (Math.random()*4));
+                    break;
+                case 2:
+                    candy = new gummyBeertje();
+                    break;
+                case 3:
+                    candy = new jollyRanger();
+                    break;
+                case 4:
+                    candy = new dropVeter();
+                    break;
+                case 5:
+                    candy = new Pèche();
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + randomGetal);
+            }
+            speelbord.add(candy);
         }
+    }
+    public Candy generateRandomCandy() {
+        int randomGetal = (int) (1+Math.random()*5);
+        Candy candy;
+        switch(randomGetal) {
+            case 1:
+                candy = new NormalCandy((int) (Math.random()*4));
+                break;
+            case 2:
+                candy = new gummyBeertje();
+                break;
+            case 3:
+                candy = new jollyRanger();
+                break;
+            case 4:
+                candy = new dropVeter();
+                break;
+            case 5:
+                candy = new Pèche();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + randomGetal);
+        }
+        return candy;
     }
     public ArrayList<Integer> checkBuren(int index){
         ArrayList<Integer> buren = (ArrayList<Integer>) CheckNeighboursInGrid.getSameNeighboursIds(speelbord,board.width(),board.height(),index);
@@ -80,21 +132,41 @@ public class model {
     }
 
     public void veranderCandy(int index){
-        speelbord.set(index,(int) (Math.random()*6));
+        int randomGetal = (int) (1+Math.random()*5);
+        Candy candy;
+        switch(randomGetal) {
+            case 1:
+                candy = new NormalCandy((int) (Math.random()*4));
+                break;
+            case 2:
+                candy = new gummyBeertje();
+                break;
+            case 3:
+                candy = new jollyRanger();
+                break;
+            case 4:
+                candy = new dropVeter();
+                break;
+            case 5:
+                candy = new Pèche();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + randomGetal);
+        }
+        speelbord.set(index, candy);
     }
 
     public String getSpeler() {
         return Speler;
     }
 
-    public ArrayList<Integer> getSpeelbord() {
+    public ArrayList<Candy> getSpeelbord() {
         return speelbord;
     }
 
-    public int getSpeelbordValueOfIndex(int index){
+    public Candy getSpeelbordValueOfIndex(int index){
        return speelbord.get(index);
     }
-
     public int getScore() {
         return Score;
     }
@@ -106,6 +178,7 @@ public class model {
     public boardSize getBoard() {
         return board;
     }
+
     public void reset() {
         speelbord.clear();
         setScore(0);

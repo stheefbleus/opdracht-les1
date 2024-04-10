@@ -39,9 +39,9 @@ public class candyCrushController {
     }
 
     private void klik(MouseEvent e){
-        int x = (int) e.getX()/ (200/model.getWidth());
-        int y = (int) e.getY()/ (200/model.getHeight());
-        int index = y * model.getWidth() +x;
+        int x = (int) e.getX()/ (200/model.getBoard().width());
+        int y = (int) e.getY()/ (200/model.getBoard().height());
+        int index = y * model.getBoard().width() +x;
         ArrayList<Integer>buren= model.checkBuren(index);
         buren.add(index);
         if (buren.size() >= 3) {
