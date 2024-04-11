@@ -13,7 +13,7 @@ import java.util.Iterator;
 public class candyCrushView extends Region {
     private int widthCandy;
     private int heightCandy;
-    private be.kuleuven.candycrush.model.model model;
+    private model model;
 
     public Node makeCandyShape(model.position position, model.Candy candy) {
         Node node;
@@ -21,7 +21,7 @@ public class candyCrushView extends Region {
         int y = position.rijNummer() * heightCandy;
 
         if (candy instanceof model.NormalCandy) {
-            Circle circle = new Circle(x, y, widthCandy / 2);
+            Circle circle = new Circle(x+widthCandy/2, y+heightCandy/2, widthCandy/ 2);
             int color = ((model.NormalCandy) candy).color();
             switch (color) {
                 case 0:
@@ -56,8 +56,8 @@ public class candyCrushView extends Region {
 
     public candyCrushView(be.kuleuven.candycrush.model.model model) {
         this.model = model;
-        widthCandy = 20;
-        heightCandy = 20;
+        widthCandy = 40;
+        heightCandy = 40;
         updateView();
     }
 
@@ -65,19 +65,20 @@ public class candyCrushView extends Region {
         getChildren().clear();
 
         int i = 0 ;
-        int height = 1;
+        int height = 0;
         Iterator<model.Candy> iter = model.getSpeelbord().iterator();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             model.Candy candy = iter.next();
-            Text text = new Text(i*widthCandy,height*heightCandy, String.valueOf(candy));
-            getChildren().add(text);
-            if(i== model.getBoard().width()-1){
+            if (i == model.getBoard().width()) {
                 i = 0;
                 height++;
             }
-            else{
-                i++;
+            if (height < model.getBoard().height()) {
+                model.position position = new model.position(i, height, model.getBoard());
+                Node node = makeCandyShape(position, candy);
+                getChildren().add(node);
             }
+            i++;
         }
     }
 }

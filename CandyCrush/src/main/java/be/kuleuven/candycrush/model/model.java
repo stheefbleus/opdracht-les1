@@ -1,8 +1,8 @@
 package be.kuleuven.candycrush.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import be.kuleuven.CheckNeighboursInGrid;
 public class model {
     private String Speler;
     private ArrayList<Candy> speelbord;
@@ -24,10 +24,10 @@ public class model {
     }
     public record position(int rijNummer, int kolomNummer, boardSize boardSize){
         public position {
-            if (rijNummer <=0 || rijNummer >= boardSize.height()){
+            if (rijNummer <0 || rijNummer >= boardSize.height()){
                 throw new IllegalArgumentException("rij moet in de board-hoogte zijn");
             }
-            if (kolomNummer <=0 || kolomNummer >= boardSize.width()){
+            if (kolomNummer <0 || kolomNummer >= boardSize.width()){
                 throw new IllegalArgumentException("rij moet in de board-breedte zijn");
             }
         }
@@ -46,10 +46,41 @@ public class model {
         }
         Iterable<position> neighborPositions(){
             ArrayList<position> neighbors = new ArrayList<>();
-            if (rijNummer > 0) neighbors.add(new position(rijNummer-1,kolomNummer,boardSize));
-            if (rijNummer < boardSize.height()-1) neighbors.add(new position(rijNummer+1,kolomNummer,boardSize));
-            if (kolomNummer > 0) neighbors.add(new position(rijNummer,kolomNummer-1,boardSize));
-            if (kolomNummer < boardSize.width()-1) neighbors.add(new position(rijNummer,kolomNummer+1,boardSize));
+            int maxRij = boardSize.height() - 1;
+            int maxKolom = boardSize.width() - 1;
+
+            // Controleer noordelijke buur
+            if (rijNummer > 0)
+                neighbors.add(new position(rijNummer - 1, kolomNummer, boardSize));
+
+            // Controleer zuidelijke buur
+            if (rijNummer < maxRij)
+                neighbors.add(new position(rijNummer + 1, kolomNummer, boardSize));
+
+            // Controleer westelijke buur
+            if (kolomNummer > 0)
+                neighbors.add(new position(rijNummer, kolomNummer - 1, boardSize));
+
+            // Controleer oostelijke buur
+            if (kolomNummer < maxKolom)
+                neighbors.add(new position(rijNummer, kolomNummer + 1, boardSize));
+
+            // Controleer noordwestelijke buur
+            if (rijNummer > 0 && kolomNummer > 0)
+                neighbors.add(new position(rijNummer - 1, kolomNummer - 1, boardSize));
+
+            // Controleer noordoostelijke buur
+            if (rijNummer > 0 && kolomNummer < maxKolom)
+                neighbors.add(new position(rijNummer - 1, kolomNummer + 1, boardSize));
+
+            // Controleer zuidwestelijke buur
+            if (rijNummer < maxRij && kolomNummer > 0)
+                neighbors.add(new position(rijNummer + 1, kolomNummer - 1, boardSize));
+
+            // Controleer zuidoostelijke buur
+            if (rijNummer < maxRij && kolomNummer < maxKolom)
+                neighbors.add(new position(rijNummer + 1, kolomNummer + 1, boardSize));
+
             return neighbors;
         }
         boolean isLastColumn(){
@@ -78,22 +109,22 @@ public class model {
 
     public void genSpeelbord() {
         for (int i= 0;i < board.width()*board.height();i++){
-            int randomGetal = (int) (1+Math.random()*5);
+            int randomGetal = (int) (1+Math.random()*12);
             Candy candy;
             switch(randomGetal) {
-                case 1:
+                case 1,2,3,4,5,6,7,8:
                     candy = new NormalCandy((int) (Math.random()*4));
                     break;
-                case 2:
+                case 9:
                     candy = new gummyBeertje();
                     break;
-                case 3:
+                case 10:
                     candy = new jollyRanger();
                     break;
-                case 4:
+                case 11:
                     candy = new dropVeter();
                     break;
-                case 5:
+                case 12:
                     candy = new Pèche();
                     break;
                 default:
@@ -102,52 +133,23 @@ public class model {
             speelbord.add(candy);
         }
     }
-    public Candy generateRandomCandy() {
-        int randomGetal = (int) (1+Math.random()*5);
-        Candy candy;
-        switch(randomGetal) {
-            case 1:
-                candy = new NormalCandy((int) (Math.random()*4));
-                break;
-            case 2:
-                candy = new gummyBeertje();
-                break;
-            case 3:
-                candy = new jollyRanger();
-                break;
-            case 4:
-                candy = new dropVeter();
-                break;
-            case 5:
-                candy = new Pèche();
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + randomGetal);
-        }
-        return candy;
-    }
-    public ArrayList<Integer> checkBuren(int index){
-        ArrayList<Integer> buren = (ArrayList<Integer>) CheckNeighboursInGrid.getSameNeighboursIds(speelbord,board.width(),board.height(),index);
-        return buren;
-    }
-
     public void veranderCandy(int index){
-        int randomGetal = (int) (1+Math.random()*5);
+        int randomGetal = (int) (1+Math.random()*12);
         Candy candy;
         switch(randomGetal) {
-            case 1:
+            case 1,2,3,4,5,6,7,8:
                 candy = new NormalCandy((int) (Math.random()*4));
                 break;
-            case 2:
+            case 9:
                 candy = new gummyBeertje();
                 break;
-            case 3:
+            case 10:
                 candy = new jollyRanger();
                 break;
-            case 4:
+            case 11:
                 candy = new dropVeter();
                 break;
-            case 5:
+            case 12:
                 candy = new Pèche();
                 break;
             default:
@@ -155,17 +157,35 @@ public class model {
         }
         speelbord.set(index, candy);
     }
+    public Iterable<position> getSameNeighborsPositions(int index) {
+        // Check if the index is within the board size
+        if (index < 0 || index >= board.width() * board.height()) {
+            throw new IllegalArgumentException("Index must be within the board size");
+        }
 
+        Candy targetCandy = speelbord.get(index);
+        List<position> sameNeighbors = new ArrayList<>();
+
+        // Get the current position
+        position currentPosition = position.fromIndex(index, board);
+
+        // Check neighbor positions
+        for (position neighbor : currentPosition.neighborPositions()) {
+            int neighborIndex = neighbor.toIndex();
+            if (speelbord.get(neighborIndex).equals(targetCandy)) {
+                sameNeighbors.add(neighbor);
+            }
+        }
+        // Add the current position to the list
+        sameNeighbors.add(currentPosition);
+
+        return sameNeighbors; // This will be implicitly cast to Iterable<position>
+    }
     public String getSpeler() {
         return Speler;
     }
-
     public ArrayList<Candy> getSpeelbord() {
         return speelbord;
-    }
-
-    public Candy getSpeelbordValueOfIndex(int index){
-       return speelbord.get(index);
     }
     public int getScore() {
         return Score;

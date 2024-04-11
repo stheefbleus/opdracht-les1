@@ -39,22 +39,22 @@ public class candyCrushController {
     }
 
     private void klik(MouseEvent e){
-        int x = (int) e.getX()/ (200/model.getBoard().width());
-        int y = (int) e.getY()/ (200/model.getBoard().height());
-        int index = y * model.getBoard().width() +x;
-        ArrayList<Integer>buren= model.checkBuren(index);
-        buren.add(index);
-        if (buren.size() >= 3) {
-            model.setScore(model.getScore() + buren.size());
+        int y = (int) e.getX()/ (400/model.getBoard().width());
+        int x = (int) e.getY()/ (400/model.getBoard().height());
+        int index = y * model.getBoard().width() + x;
+        Iterable<model.position> sameNeighbors = model.getSameNeighborsPositions(index);
+        int sameNeighborsCount = 0;
+        for (model.position pos : sameNeighbors) {
+            model.veranderCandy(pos.toIndex());
+            sameNeighborsCount++;
         }
-        for (int i : buren) {
-            model.veranderCandy(i);
+        if (sameNeighborsCount >= 3) {
+            model.setScore(model.getScore() + sameNeighborsCount);
+            sameNeighborsCount = 0;
         }
-        buren.clear();
         update();
     }
     public void update(){
-
         Score.setText(String.valueOf(model.getScore()));
         candyCrushView.updateView();
     }
