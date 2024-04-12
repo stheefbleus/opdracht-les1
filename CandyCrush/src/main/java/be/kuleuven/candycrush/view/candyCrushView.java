@@ -2,7 +2,6 @@ package be.kuleuven.candycrush.view;
 
 import be.kuleuven.candycrush.model.model;
 import javafx.scene.layout.Region;
-import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
