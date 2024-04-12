@@ -108,7 +108,8 @@ public class model {
     }
 
     public void genSpeelbord() {
-        for (int i= 0;i < board.width()*board.height();i++){
+        speelbord.clear();
+        for (position pos : board.positions()) {
             int randomGetal = (int) (1+Math.random()*12);
             Candy candy;
             switch(randomGetal) {
@@ -134,28 +135,30 @@ public class model {
         }
     }
     public void veranderCandy(int index){
-        int randomGetal = (int) (1+Math.random()*12);
-        Candy candy;
-        switch(randomGetal) {
-            case 1,2,3,4,5,6,7,8:
-                candy = new NormalCandy((int) (Math.random()*4));
-                break;
-            case 9:
-                candy = new gummyBeertje();
-                break;
-            case 10:
-                candy = new jollyRanger();
-                break;
-            case 11:
-                candy = new dropVeter();
-                break;
-            case 12:
-                candy = new Pèche();
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + randomGetal);
+        for (position pos : board.positions()) {
+            int randomGetal = (int) (1 + Math.random() * 12);
+            Candy candy;
+            switch (randomGetal) {
+                case 1, 2, 3, 4, 5, 6, 7, 8:
+                    candy = new NormalCandy((int) (Math.random() * 4));
+                    break;
+                case 9:
+                    candy = new gummyBeertje();
+                    break;
+                case 10:
+                    candy = new jollyRanger();
+                    break;
+                case 11:
+                    candy = new dropVeter();
+                    break;
+                case 12:
+                    candy = new Pèche();
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + randomGetal);
+            }
+            speelbord.set(index, candy);
         }
-        speelbord.set(index, candy);
     }
     public Iterable<position> getSameNeighborsPositions(int index) {
         // Check if the index is within the board size
