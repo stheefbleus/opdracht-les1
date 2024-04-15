@@ -13,10 +13,10 @@ public class board<T> {
         this.boardMap = new HashMap<>();
         this.reverseBoardMap = new HashMap<>();
     }
-    public T getCellAt(model.position position) {
+    public synchronized T getCellAt(model.position position) {
         return this.boardMap.get(position);
     }
-    public void replaceCellAt(model.position position, T newCell) {
+    public synchronized void replaceCellAt(model.position position, T newCell) {
         T oldCell = this.boardMap.get(position);
         if (oldCell != null) {
             this.reverseBoardMap.get(oldCell).remove(position);
@@ -29,11 +29,11 @@ public class board<T> {
         return this.size;
     }
 
-    public Set<model.position> getPositionsOfElement(T cell) {
+    public synchronized Set<model.position> getPositionsOfElement(T cell) {
         return Collections.unmodifiableSet(this.reverseBoardMap.getOrDefault(cell, new HashSet<>()));
     }
 
-    public void fill(Function<model.position, T> cellCreator) {
+    public synchronized void fill(Function<model.position, T> cellCreator) {
         for (int i = 0; i < size.height(); i++) {
             for (int j = 0; j < size.width(); j++) {
                 model.position position = new model.position(i,j,size);
@@ -42,7 +42,7 @@ public class board<T> {
             }
         }
     }
-    public void copyTo(board<T> otherBoard) {
+    public synchronized void copyTo(board<T> otherBoard) {
         if (otherBoard.getSize().height() != this.size.height() || otherBoard.getSize().width() != this.size.width()) {
             throw new IllegalArgumentException("The other board must have the same dimensions.");
         }
