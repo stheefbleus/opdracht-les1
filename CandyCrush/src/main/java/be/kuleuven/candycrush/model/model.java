@@ -1,11 +1,12 @@
 package be.kuleuven.candycrush.model;
+import be.kuleuven.candycrush.board;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class model {
     private String Speler;
-    private ArrayList<Candy> speelbord;
+    private board<Candy> speelbord;
     private int Score;
     private boardSize board;
 
@@ -101,14 +102,14 @@ public class model {
 
     public model(String speler){
         this.Speler = speler;
-        speelbord = new ArrayList<>();
         board = new boardSize(10,10);
+        speelbord = new board<>(board);
         Score = 0;
         genSpeelbord();
     }
 
     public void genSpeelbord() {
-        speelbord.clear();
+        speelbord = new board<>(board);
         for (position pos : board.positions()) {
             int randomGetal = (int) (1+Math.random()*12);
             Candy candy;
@@ -131,7 +132,7 @@ public class model {
                 default:
                     throw new IllegalStateException("Unexpected value: " + randomGetal);
             }
-            speelbord.add(candy);
+            speelbord.setCell(pos, candy);
         }
     }
     public void veranderCandy(int index){
@@ -157,7 +158,7 @@ public class model {
                 default:
                     throw new IllegalStateException("Unexpected value: " + randomGetal);
             }
-            speelbord.set(index, candy);
+            speelbord.setCell(position.fromIndex(index, board), candy);
         }
     }
     public Iterable<position> getSameNeighborsPositions(int index) {
@@ -166,7 +167,7 @@ public class model {
             throw new IllegalArgumentException("Index must be within the board size");
         }
 
-        Candy targetCandy = speelbord.get(index);
+        Candy targetCandy = speelbord.getCellAt(position.fromIndex(index, board));
         List<position> sameNeighbors = new ArrayList<>();
 
         // Get the current position
@@ -175,35 +176,30 @@ public class model {
         // Check neighbor positions
         for (position neighbor : currentPosition.neighborPositions()) {
             int neighborIndex = neighbor.toIndex();
-            if (speelbord.get(neighborIndex).equals(targetCandy)) {
+            if (speelbord.getCellAt(position.fromIndex(neighborIndex, board)).equals(targetCandy)) {
                 sameNeighbors.add(neighbor);
             }
         }
         // Add the current position to the list
         sameNeighbors.add(currentPosition);
 
-        return sameNeighbors; // This will be implicitly cast to Iterable<position>
+        return sameNeighbors;
     }
     public String getSpeler() {
         return Speler;
     }
-    public ArrayList<Candy> getSpeelbord() {
-        return speelbord;
-    }
+    public board<Candy> getSpeelbord() { return speelbord; }
     public int getScore() {
         return Score;
     }
-
     public void setScore(int score) {
         Score = score;
     }
-
     public boardSize getBoard() {
         return board;
     }
-
     public void reset() {
-        speelbord.clear();
+        speelbord = new board<>(board);
         setScore(0);
         genSpeelbord();
     }

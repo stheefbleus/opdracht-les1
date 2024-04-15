@@ -25,7 +25,7 @@ public class menuController {
 
     @FXML
     public void initialize(){
-        model model = new model("Default Player");
+        this.model = new model("Default Player");
         btn.setText("Start");
         btn.setOnAction(this::inDruk);
         speler.setPromptText(model.getSpeler());

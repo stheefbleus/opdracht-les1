@@ -7,8 +7,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 
-import java.util.Iterator;
-
 public class candyCrushView extends Region {
     private int widthCandy;
     private int heightCandy;
@@ -63,21 +61,13 @@ public class candyCrushView extends Region {
     public void updateView() {
         getChildren().clear();
 
-        int i = 0 ;
-        int height = 0;
-        Iterator<model.Candy> iter = model.getSpeelbord().iterator();
-        while (iter.hasNext()) {
-            model.Candy candy = iter.next();
-            if (i == model.getBoard().width()) {
-                i = 0;
-                height++;
-            }
-            if (height < model.getBoard().height()) {
-                model.position position = new model.position(i, height, model.getBoard());
+        for (int i = 0; i < model.getBoard().height(); i++) {
+            for (int j = 0; j < model.getBoard().width(); j++) {
+                model.position position = new model.position(j, i, model.getBoard());
+                model.Candy candy = model.getSpeelbord().getCellAt(position);
                 Node node = makeCandyShape(position, candy);
                 getChildren().add(node);
             }
-            i++;
         }
     }
 }

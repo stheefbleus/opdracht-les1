@@ -39,8 +39,8 @@ public class candyCrushController {
     }
 
     private void klik(MouseEvent e){
-        int y = (int) e.getX()/ (400/model.getBoard().width());
-        int x = (int) e.getY()/ (400/model.getBoard().height());
+        int x = (int) e.getX()/ (400/model.getBoard().width());
+        int y = (int) e.getY()/ (400/model.getBoard().height());
         int index = y * model.getBoard().width() + x;
         Iterable<model.position> sameNeighbors = model.getSameNeighborsPositions(index);
         int sameNeighborsCount = 0;
