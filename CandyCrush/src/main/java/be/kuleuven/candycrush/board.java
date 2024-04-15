@@ -1,32 +1,36 @@
 package be.kuleuven.candycrush;
 import be.kuleuven.candycrush.model.model;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.function.Function;
 
 public class board<T> {
-    private ArrayList<ArrayList<T>> board;
+    private Map<model.position, T> boardMap;
+    private Map<T, Set<model.position>> reverseBoardMap;
     private model.boardSize size;
     public board(model.boardSize size) {
         this.size = new model.boardSize(10,10);
-        this.board = new ArrayList<>();
-        for (int i = 0; i < size.height(); i++) {
-            ArrayList<T> row = new ArrayList<>();
-            for (int j = 0; j < size.width(); j++) {
-                row.add(null);
-            }
-            this.board.add(row);
-        }
+        this.boardMap = new HashMap<>();
+        this.reverseBoardMap = new HashMap<>();
     }
     public T getCellAt(model.position position) {
-        return this.board.get(position.rijNummer()).get(position.kolomNummer());
+        return this.boardMap.get(position);
     }
     public void replaceCellAt(model.position position, T newCell) {
-        this.board.get(position.rijNummer()).set(position.kolomNummer(), newCell);
+        T oldCell = this.boardMap.get(position);
+        if (oldCell != null) {
+            this.reverseBoardMap.get(oldCell).remove(position);
+        }
+        this.boardMap.put(position, newCell);
+        this.reverseBoardMap.computeIfAbsent(newCell, k -> new HashSet<>()).add(position);
     }
 
     public model.boardSize getSize() {
         return this.size;
+    }
+
+    public Set<model.position> getPositionsOfElement(T cell) {
+        return Collections.unmodifiableSet(this.reverseBoardMap.getOrDefault(cell, new HashSet<>()));
     }
 
     public void fill(Function<model.position, T> cellCreator) {

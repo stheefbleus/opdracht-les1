@@ -132,7 +132,7 @@ public class model {
                 default:
                     throw new IllegalStateException("Unexpected value: " + randomGetal);
             }
-            speelbord.setCell(pos, candy);
+            speelbord.replaceCellAt(pos, candy);
         }
     }
     public void veranderCandy(int index){
@@ -158,7 +158,7 @@ public class model {
                 default:
                     throw new IllegalStateException("Unexpected value: " + randomGetal);
             }
-            speelbord.setCell(position.fromIndex(index, board), candy);
+            speelbord.replaceCellAt(position.fromIndex(index, board), candy);
         }
     }
     public Iterable<position> getSameNeighborsPositions(int index) {
