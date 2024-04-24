@@ -1,22 +1,21 @@
-package be.kuleuven.candycrush;
-import be.kuleuven.candycrush.model.model;
+package be.kuleuven.candycrush.recordsAndGenerics;
 
 import java.util.*;
 import java.util.function.Function;
 
 public class board<T> {
-    private Map<model.position, T> boardMap;
-    private Map<T, Set<model.position>> reverseBoardMap;
-    private model.boardSize size;
-    public board(model.boardSize size) {
-        this.size = new model.boardSize(10,10);
+    private Map<Position, T> boardMap;
+    private Map<T, Set<Position>> reverseBoardMap;
+    private Boardsize size;
+    public board(Boardsize size) {
+        this.size = new Boardsize(10,10);
         this.boardMap = new HashMap<>();
         this.reverseBoardMap = new HashMap<>();
     }
-    public synchronized T getCellAt(model.position position) {
+    public synchronized T getCellAt(Position position) {
         return this.boardMap.get(position);
     }
-    public synchronized void replaceCellAt(model.position position, T newCell) {
+    public synchronized void replaceCellAt(Position position, T newCell) {
         T oldCell = this.boardMap.get(position);
         if (oldCell != null) {
             this.reverseBoardMap.get(oldCell).remove(position);
@@ -25,18 +24,18 @@ public class board<T> {
         this.reverseBoardMap.computeIfAbsent(newCell, k -> new HashSet<>()).add(position);
     }
 
-    public model.boardSize getSize() {
+    public Boardsize getSize() {
         return this.size;
     }
 
-    public synchronized Set<model.position> getPositionsOfElement(T cell) {
+    public synchronized Set<Position> getPositionsOfElement(T cell) {
         return Collections.unmodifiableSet(this.reverseBoardMap.getOrDefault(cell, new HashSet<>()));
     }
 
-    public synchronized void fill(Function<model.position, T> cellCreator) {
+    public synchronized void fill(Function<Position, T> cellCreator) {
         for (int i = 0; i < size.height(); i++) {
             for (int j = 0; j < size.width(); j++) {
-                model.position position = new model.position(i,j,size);
+                Position position = new Position(i,j,size);
                 T cell = cellCreator.apply(position);
                 replaceCellAt(position, cell);
             }
@@ -49,7 +48,7 @@ public class board<T> {
 
         for (int i = 0; i < size.height(); i++) {
             for (int j = 0; j < size.width(); j++) {
-                model.position position = new model.position(i,j,size);
+                Position position = new Position(i,j,size);
                 T cell = getCellAt(position);
                 otherBoard.replaceCellAt(position, cell);
             }

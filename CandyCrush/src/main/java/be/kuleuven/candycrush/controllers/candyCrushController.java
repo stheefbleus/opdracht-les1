@@ -1,5 +1,6 @@
 package be.kuleuven.candycrush.controllers;
 
+import be.kuleuven.candycrush.recordsAndGenerics.Position;
 import be.kuleuven.candycrush.view.candyCrushView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,8 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import be.kuleuven.candycrush.model.model;
-
-import java.util.ArrayList;
 
 public class candyCrushController {
     @FXML
@@ -42,9 +41,9 @@ public class candyCrushController {
         int x = (int) e.getX()/ (400/model.getBoard().width());
         int y = (int) e.getY()/ (400/model.getBoard().height());
         int index = y * model.getBoard().width() + x;
-        Iterable<model.position> sameNeighbors = model.getSameNeighborsPositions(index);
+        Iterable<Position> sameNeighbors = model.getSameNeighborsPositions(index);
         int sameNeighborsCount = 0;
-        for (model.position pos : sameNeighbors) {
+        for (Position pos : sameNeighbors) {
             model.veranderCandy(pos.toIndex());
             sameNeighborsCount++;
         }

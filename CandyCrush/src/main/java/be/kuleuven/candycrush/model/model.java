@@ -1,5 +1,7 @@
 package be.kuleuven.candycrush.model;
-import be.kuleuven.candycrush.board;
+import be.kuleuven.candycrush.recordsAndGenerics.board;
+import be.kuleuven.candycrush.recordsAndGenerics.Boardsize;
+import be.kuleuven.candycrush.recordsAndGenerics.Position;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,87 +10,10 @@ public class model {
     private String Speler;
     private board<Candy> speelbord;
     private int Score;
-    private boardSize board;
+    private Boardsize board;
 
-    public record boardSize(int width,int height){
-        public boardSize {
-            if (width <= 0) throw new IllegalArgumentException("width must not be 0");
-            if (height <= 0) throw new IllegalArgumentException("height must not be 0");
-        }
-        Iterable<position> positions(){
-            ArrayList<position> positions = new ArrayList<>();
-            for (int i = 0; i < width*height; i++){
-                positions.add(position.fromIndex(i,this));
-            }
-            return positions;
-        }
-    }
-    public record position(int rijNummer, int kolomNummer, boardSize boardSize){
-        public position {
-            if (rijNummer <0 || rijNummer >= boardSize.height()){
-                throw new IllegalArgumentException("rij moet in de board-hoogte zijn");
-            }
-            if (kolomNummer <0 || kolomNummer >= boardSize.width()){
-                throw new IllegalArgumentException("rij moet in de board-breedte zijn");
-            }
-        }
-        public int toIndex(){
-            return rijNummer * boardSize.width() + kolomNummer;
-        }
-        static position fromIndex(int index, boardSize size){
-            if( index > size.height() * size.width()){
-                throw new IllegalArgumentException("index bestaat niet");
-            }
-            else{
-                int rij = index/ size.width();
-                int kolom = index % size.width();
-                return new position(rij,kolom,size);
-            }
-        }
-        Iterable<position> neighborPositions(){
-            ArrayList<position> neighbors = new ArrayList<>();
-            int maxRij = boardSize.height() - 1;
-            int maxKolom = boardSize.width() - 1;
 
-            // Controleer noordelijke buur
-            if (rijNummer > 0)
-                neighbors.add(new position(rijNummer - 1, kolomNummer, boardSize));
 
-            // Controleer zuidelijke buur
-            if (rijNummer < maxRij)
-                neighbors.add(new position(rijNummer + 1, kolomNummer, boardSize));
-
-            // Controleer westelijke buur
-            if (kolomNummer > 0)
-                neighbors.add(new position(rijNummer, kolomNummer - 1, boardSize));
-
-            // Controleer oostelijke buur
-            if (kolomNummer < maxKolom)
-                neighbors.add(new position(rijNummer, kolomNummer + 1, boardSize));
-
-            // Controleer noordwestelijke buur
-            if (rijNummer > 0 && kolomNummer > 0)
-                neighbors.add(new position(rijNummer - 1, kolomNummer - 1, boardSize));
-
-            // Controleer noordoostelijke buur
-            if (rijNummer > 0 && kolomNummer < maxKolom)
-                neighbors.add(new position(rijNummer - 1, kolomNummer + 1, boardSize));
-
-            // Controleer zuidwestelijke buur
-            if (rijNummer < maxRij && kolomNummer > 0)
-                neighbors.add(new position(rijNummer + 1, kolomNummer - 1, boardSize));
-
-            // Controleer zuidoostelijke buur
-            if (rijNummer < maxRij && kolomNummer < maxKolom)
-                neighbors.add(new position(rijNummer + 1, kolomNummer + 1, boardSize));
-
-            return neighbors;
-        }
-        boolean isLastColumn(){
-            return kolomNummer == boardSize.width()-1;
-        }
-
-    }
     public sealed interface Candy permits NormalCandy,gummyBeertje,jollyRanger,dropVeter,Pèche{}
     public record NormalCandy(int color) implements Candy{
         public NormalCandy{
@@ -102,7 +27,7 @@ public class model {
 
     public model(String speler){
         this.Speler = speler;
-        board = new boardSize(10,10);
+        board = new Boardsize(10,10);
         speelbord = new board<>(board);
         Score = 0;
         genSpeelbord();
@@ -110,7 +35,7 @@ public class model {
 
     public void genSpeelbord() {
         speelbord = new board<>(board);
-        for (position pos : board.positions()) {
+        for (Position pos : board.positions()) {
             int randomGetal = (int) (1+Math.random()*12);
             Candy candy;
             switch(randomGetal) {
@@ -136,7 +61,7 @@ public class model {
         }
     }
     public void veranderCandy(int index){
-        for (position pos : board.positions()) {
+        for (Position pos : board.positions()) {
             int randomGetal = (int) (1 + Math.random() * 12);
             Candy candy;
             switch (randomGetal) {
@@ -158,25 +83,25 @@ public class model {
                 default:
                     throw new IllegalStateException("Unexpected value: " + randomGetal);
             }
-            speelbord.replaceCellAt(position.fromIndex(index, board), candy);
+            speelbord.replaceCellAt(Position.fromIndex(index, board), candy);
         }
     }
-    public Iterable<position> getSameNeighborsPositions(int index) {
+    public Iterable<Position> getSameNeighborsPositions(int index) {
         // Check if the index is within the board size
         if (index < 0 || index >= board.width() * board.height()) {
             throw new IllegalArgumentException("Index must be within the board size");
         }
 
-        Candy targetCandy = speelbord.getCellAt(position.fromIndex(index, board));
-        List<position> sameNeighbors = new ArrayList<>();
+        Candy targetCandy = speelbord.getCellAt(Position.fromIndex(index, board));
+        List<Position> sameNeighbors = new ArrayList<>();
 
         // Get the current position
-        position currentPosition = position.fromIndex(index, board);
+        Position currentPosition = Position.fromIndex(index, board);
 
         // Check neighbor positions
-        for (position neighbor : currentPosition.neighborPositions()) {
+        for (Position neighbor : currentPosition.neighborPositions()) {
             int neighborIndex = neighbor.toIndex();
-            if (speelbord.getCellAt(position.fromIndex(neighborIndex, board)).equals(targetCandy)) {
+            if (speelbord.getCellAt(Position.fromIndex(neighborIndex, board)).equals(targetCandy)) {
                 sameNeighbors.add(neighbor);
             }
         }
@@ -195,7 +120,7 @@ public class model {
     public void setScore(int score) {
         Score = score;
     }
-    public boardSize getBoard() {
+    public Boardsize getBoard() {
         return board;
     }
     public void reset() {

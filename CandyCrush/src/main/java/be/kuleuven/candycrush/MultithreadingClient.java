@@ -1,15 +1,18 @@
 package be.kuleuven.candycrush;
 
 import be.kuleuven.candycrush.model.model;
+import be.kuleuven.candycrush.recordsAndGenerics.Boardsize;
+import be.kuleuven.candycrush.recordsAndGenerics.Position;
+import be.kuleuven.candycrush.recordsAndGenerics.board;
 
 public class MultithreadingClient {
     private static volatile boolean running = true;
 
     public static void main(String[] args) {
-        board<model.Candy> gameBoard = new board<>(new model.boardSize(10,10));
+        board<model.Candy> gameBoard = new board<>(new Boardsize(10,10));
         Runnable task = () -> {
             while (running) {
-                model.position randomPosition = new model.position((int) (Math.random() * 10), (int) (Math.random() * 10), gameBoard.getSize());
+                Position randomPosition = new Position((int) (Math.random() * 10), (int) (Math.random() * 10), gameBoard.getSize());
                 int randomCandy = (int) (Math.random() * 12) + 1;
                 model.Candy candy;
                 switch(randomCandy) {

@@ -1,6 +1,7 @@
 package be.kuleuven.candycrush.view;
 
 import be.kuleuven.candycrush.model.model;
+import be.kuleuven.candycrush.recordsAndGenerics.Position;
 import javafx.scene.layout.Region;
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;
@@ -12,7 +13,7 @@ public class candyCrushView extends Region {
     private int heightCandy;
     private model model;
 
-    public Node makeCandyShape(model.position position, model.Candy candy) {
+    public Node makeCandyShape(Position position, model.Candy candy) {
         Node node;
         int x = position.kolomNummer() * widthCandy;
         int y = position.rijNummer() * heightCandy;
@@ -63,7 +64,7 @@ public class candyCrushView extends Region {
 
         for (int i = 0; i < model.getBoard().height(); i++) {
             for (int j = 0; j < model.getBoard().width(); j++) {
-                model.position position = new model.position(j, i, model.getBoard());
+                Position position = new Position(j, i, model.getBoard());
                 model.Candy candy = model.getSpeelbord().getCellAt(position);
                 Node node = makeCandyShape(position, candy);
                 getChildren().add(node);

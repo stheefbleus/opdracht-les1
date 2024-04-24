@@ -1,6 +1,6 @@
 package be.kuleuven.candycrush.controllers;
 
-import be.kuleuven.candycrush.HelloApplication;
+import be.kuleuven.candycrush.application.HelloApplication;
 import be.kuleuven.candycrush.model.model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -10,4 +10,8 @@ module be.kuleuven.candycrush {
     opens be.kuleuven.candycrush.controllers to javafx.fxml;
     exports be.kuleuven.candycrush.view;
     opens be.kuleuven.candycrush.view to javafx.fxml;
+    exports be.kuleuven.candycrush.recordsAndGenerics;
+    opens be.kuleuven.candycrush.recordsAndGenerics to javafx.fxml;
+    exports be.kuleuven.candycrush.application;
+    opens be.kuleuven.candycrush.application to javafx.fxml;
 }

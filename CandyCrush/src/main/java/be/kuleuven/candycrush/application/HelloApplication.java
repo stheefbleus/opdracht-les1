@@ -1,4 +1,4 @@
-package be.kuleuven.candycrush;
+package be.kuleuven.candycrush.application;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
