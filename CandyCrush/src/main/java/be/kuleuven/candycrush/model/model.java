@@ -4,7 +4,11 @@ import be.kuleuven.candycrush.recordsAndGenerics.Boardsize;
 import be.kuleuven.candycrush.recordsAndGenerics.Position;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class model {
     private String Speler;
@@ -110,6 +114,48 @@ public class model {
 
         return sameNeighbors;
     }
+    public boolean firstTwoHaveSameCandy(Candy candy, Stream<Position> positions) {
+        List<Position> positionList = positions.limit(2).collect(Collectors.toList());
+        return positionList.size() == 2 && positionList.stream().allMatch(pos -> speelbord.getCellAt(pos).equals(candy));
+    }
+
+    public Stream<Position> horizontalStartingPositions() {
+        return board.positions().stream().filter(pos -> pos.kolomNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkLeft()));
+    }
+
+    public Stream<Position> verticalStartingPositions() {
+        return board.positions().stream().filter(pos -> pos.rijNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkUp()));
+    }
+
+    public List<Position> longestMatchToRight(Position pos) {
+        List<Position> match = new ArrayList<>();
+        Candy candy = speelbord.getCellAt(pos);
+        pos.walkRight().takeWhile(currentPos -> speelbord.getCellAt(currentPos).equals(candy)).forEach(match::add);
+        return match;
+    }
+
+    public List<Position> longestMatchDown(Position pos) {
+        List<Position> match = new ArrayList<>();
+        Candy candy = speelbord.getCellAt(pos);
+        pos.walkDown().takeWhile(currentPos -> speelbord.getCellAt(currentPos).equals(candy)).forEach(match::add);
+        return match;
+    }
+
+    public Set<List<Position>> findAllMatches() {
+        Set<List<Position>> matches = new HashSet<>();
+        Stream.concat(horizontalStartingPositions(), verticalStartingPositions()).forEach(pos -> {
+            List<Position> horizontalMatch = longestMatchToRight(pos);
+            if (horizontalMatch.size() >= 3) {
+                matches.add(horizontalMatch);
+            }
+            List<Position> verticalMatch = longestMatchDown(pos);
+            if (verticalMatch.size() >= 3) {
+                matches.add(verticalMatch);
+            }
+        });
+        return matches;
+    }
+
     public String getSpeler() {
         return Speler;
     }
