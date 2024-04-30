@@ -155,6 +155,51 @@ public class model {
         });
         return matches;
     }
+    public void clearMatch(List<Position> match) {
+        if (match.isEmpty()) {
+            return;
+        }
+
+        Position pos = match.get(0);
+        speelbord.replaceCellAt(pos, null);
+        match.remove(0);
+
+        clearMatch(match);
+    }
+    public void fallDownTo(Position pos) {
+        if (speelbord.getCellAt(pos) != null) {
+            return;
+        }
+
+        Position abovePos = new Position(pos.rijNummer() - 1, pos.kolomNummer(), pos.boardSize());
+
+        if (abovePos.rijNummer() >= 0 && speelbord.getCellAt(abovePos) != null) {
+            speelbord.replaceCellAt(pos, speelbord.getCellAt(abovePos));
+            speelbord.replaceCellAt(abovePos, null);
+        }
+
+        if (abovePos.rijNummer() > 0) {
+            fallDownTo(abovePos);
+        }
+    }
+    public boolean updateBoard() {
+        Set<List<Position>> matches = findAllMatches();
+
+        if (matches.isEmpty()) {
+            return false;
+        }
+
+        for (List<Position> match : matches) {
+            clearMatch(new ArrayList<>(match));
+            for (Position pos : match) {
+                fallDownTo(pos);
+            }
+        }
+
+        updateBoard();
+
+        return true;
+    }
 
     public String getSpeler() {
         return Speler;
