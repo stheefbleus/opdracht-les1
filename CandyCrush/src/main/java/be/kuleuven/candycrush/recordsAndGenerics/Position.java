@@ -64,7 +64,7 @@ public record Position(int rijNummer, int kolomNummer, Boardsize boardSize){
 
         return neighbors;
     }
-    boolean isLastColumn(){
+    public boolean isLastColumn(){
         return kolomNummer == boardSize.width()-1;
     }
 

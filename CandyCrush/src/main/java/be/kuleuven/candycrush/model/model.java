@@ -71,27 +71,23 @@ public class model {
     }
 
     public Stream<Position> horizontalStartingPositions() {
-        return board.positions().stream().filter(pos -> pos.kolomNummer() > 0 && firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkRight()))
-                                .filter(pos -> pos.kolomNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkLeft()));
+        return board.positions().stream().filter(pos -> !pos.isLastColumn() && pos.kolomNummer() > 0 && firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkRight()))
+                                .filter(pos -> !pos.isLastColumn() && pos.kolomNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkLeft()));
     }
 
     public Stream<Position> verticalStartingPositions() {
-        return board.positions().stream().filter(pos -> pos.rijNummer() > 0 && firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkDown()))
-                                .filter(pos -> pos.rijNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkUp()));
+        return board.positions().stream().filter(pos -> !pos.isLastColumn() && pos.rijNummer() > 0 && firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkDown()))
+                                .filter(pos -> !pos.isLastColumn() && pos.rijNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkUp()));
     }
 
     public List<Position> longestMatchToRight(Position pos) {
-        List<Position> match = new ArrayList<>();
         Candy candy = speelbord.getCellAt(pos);
-        pos.walkRight().takeWhile(currentPos -> speelbord.getCellAt(currentPos).equals(candy)).forEach(match::add);
-        return match;
+        return pos.walkRight().takeWhile( posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).collect(Collectors.toList());
     }
 
     public List<Position> longestMatchDown(Position pos) {
-        List<Position> match = new ArrayList<>();
         Candy candy = speelbord.getCellAt(pos);
-        pos.walkDown().takeWhile(currentPos -> speelbord.getCellAt(currentPos).equals(candy)).forEach(match::add);
-        return match;
+        return pos.walkDown().takeWhile( posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).collect(Collectors.toList());
     }
 
     public Set<List<Position>> findAllMatches() {
