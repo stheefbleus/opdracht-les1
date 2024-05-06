@@ -42,12 +42,12 @@ class modelTest {
     @Test
     public void testIfWidthIs10(){
         model model = new model("Stef");
-        assert(model.getBoard().width() == 10);
+        assert(model.getBoardsize().width() == 10);
     }
     @Test
     public void testIfHeightIs10(){
         model model = new model("Stef");
-        assert(model.getBoard().height() == 10);
+        assert(model.getBoardsize().height() == 10);
     }
     /*@Test
     public void testWhenAValueInSpeelbordHasChanged_ThatTheRightIndexHasChanged(){

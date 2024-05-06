@@ -2,11 +2,14 @@ package be.kuleuven.candycrush.view;
 
 import be.kuleuven.candycrush.model.model;
 import be.kuleuven.candycrush.recordsAndGenerics.Position;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
+
+import static be.kuleuven.candycrush.recordsAndGenerics.Position.fromIndex;
 
 public class candyCrushView extends Region {
     private int widthCandy;
@@ -62,13 +65,22 @@ public class candyCrushView extends Region {
     public void updateView() {
         getChildren().clear();
 
-        for (int i = 0; i < model.getBoard().height(); i++) {
-            for (int j = 0; j < model.getBoard().width(); j++) {
-                Position position = new Position(j, i, model.getBoard());
-                model.Candy candy = model.getSpeelbord().getCellAt(position);
-                Node node = makeCandyShape(position, candy);
-                getChildren().add(node);
+        for (int i = 0; i < model.getBoardsize().height() * model.getBoardsize().width(); i++) {
+            Position pos = fromIndex(i, model.getSpeelbord().getSize());
+            model.Candy candyModel = model.getSpeelbord().getCellAt(pos);
+
+            if(candyModel != null){
+                Node candy = makeCandyShape(pos, candyModel);
+                candy.setOnMouseClicked(e -> klik(e));
+                getChildren().add(candy);
             }
         }
+    }
+    public void klik(MouseEvent e){
+        Node candy = (Node) e.getSource();
+        double x = candy.getBoundsInParent().getMinX();
+        double y = candy.getBoundsInParent().getMinY();
+        model.klik((int) x, (int) y);
+        updateView();
     }
 }

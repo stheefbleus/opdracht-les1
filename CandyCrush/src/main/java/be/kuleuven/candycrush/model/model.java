@@ -14,7 +14,7 @@ public class model {
     private String Speler;
     private board<Candy> speelbord;
     private int Score;
-    private Boardsize board;
+    private Boardsize boardsize;
 
 
 
@@ -31,15 +31,15 @@ public class model {
 
     public model(String speler){
         this.Speler = speler;
-        board = new Boardsize(10,10);
-        speelbord = new board<>(board);
+        boardsize = new Boardsize(10,10);
+        speelbord = new board<>(boardsize);
         Score = 0;
         genSpeelbord();
     }
 
     public void genSpeelbord() {
-        speelbord = new board<>(board);
-        for (Position pos : board.positions()) {
+        speelbord = new board<>(boardsize);
+        for (Position pos : boardsize.positions()) {
             int randomGetal = (int) (1+Math.random()*12);
             Candy candy;
             switch(randomGetal) {
@@ -64,6 +64,11 @@ public class model {
             speelbord.replaceCellAt(pos, candy);
         }
     }
+    public void klik(int x, int y){
+        Position pos = new Position(x, y, boardsize);
+        swapPositions(pos, pos.walkRight().findFirst().get());
+        updateBoard();
+    }
 
     public boolean firstTwoHaveSameCandy(Candy candy, Stream<Position> positions) {
         List<Position> positionList = positions.limit(2).collect(Collectors.toList());
@@ -71,11 +76,11 @@ public class model {
     }
 
     public Stream<Position> horizontalStartingPositions() {
-        return board.positions().stream().filter(pos -> !pos.isLastColumn() && pos.kolomNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkLeft()));
+        return boardsize.positions().stream().filter(pos -> !pos.isLastColumn() && pos.kolomNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkLeft()));
     }
 
     public Stream<Position> verticalStartingPositions() {
-        return board.positions().stream().filter(pos -> !pos.isLastColumn() && pos.rijNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkUp()));
+        return boardsize.positions().stream().filter(pos -> !pos.isLastColumn() && pos.rijNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkUp()));
     }
 
     public List<Position> longestMatchToRight(Position pos) {
@@ -172,7 +177,7 @@ public class model {
 
     private Position[][] getAllValidSwaps() {
         List<Position[]> swaps = new ArrayList<>();
-        for (Position pos : board.positions()) {
+        for (Position pos : boardsize.positions()) {
             for (Position neighbor : pos.neighborPositions()) {
                 if (matchAfterSwitch(pos, neighbor)) {
                     swaps.add(new Position[]{pos, neighbor});
@@ -219,11 +224,11 @@ public class model {
     public void setScore(int score) {
         Score = score;
     }
-    public Boardsize getBoard() {
-        return board;
+    public Boardsize getBoardsize() {
+        return boardsize;
     }
     public void reset() {
-        speelbord = new board<>(board);
+        speelbord = new board<>(boardsize);
         setScore(0);
         genSpeelbord();
     }
