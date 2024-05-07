@@ -66,8 +66,12 @@ public class model {
     }
     public void klik(int x, int y){
         Position pos = new Position(x, y, boardsize);
-        swapPositions(pos, pos.walkRight().findFirst().get());
-        updateBoard();
+        Stream<Position> stream = pos.walkRight();
+        Position nextPos = stream.findFirst().orElse(null);
+        if (nextPos != null) {
+            swapPositions(pos, nextPos);
+            updateBoard();
+        }
     }
 
     public boolean firstTwoHaveSameCandy(Candy candy, Stream<Position> positions) {
@@ -76,21 +80,21 @@ public class model {
     }
 
     public Stream<Position> horizontalStartingPositions() {
-        return boardsize.positions().stream().filter(pos -> !pos.isLastColumn() && pos.kolomNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkLeft()));
+        return boardsize.positions().stream().filter(pos -> !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkLeft()));
     }
 
     public Stream<Position> verticalStartingPositions() {
-        return boardsize.positions().stream().filter(pos -> !pos.isLastColumn() && pos.rijNummer() > 0 && !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkUp()));
+        return boardsize.positions().stream().filter(pos -> !firstTwoHaveSameCandy(speelbord.getCellAt(pos), pos.walkUp()));
     }
 
     public List<Position> longestMatchToRight(Position pos) {
         Candy candy = speelbord.getCellAt(pos);
-        return pos.walkRight().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).collect(Collectors.toList());
+        return pos.walkRight().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi).equals(candy)).toList();
     }
 
     public List<Position> longestMatchDown(Position pos) {
         Candy candy = speelbord.getCellAt(pos);
-        return pos.walkDown().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).collect(Collectors.toList());
+        return pos.walkDown().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi).equals(candy)).toList();
     }
 
     public Set<List<Position>> findAllMatches() {
@@ -147,12 +151,23 @@ public class model {
                 fallDownTo(pos);
             }
         }
-
-        updateBoard();
+        if (!findAllMatches().isEmpty()) {
+            updateBoard();
+        }
 
         return true;
     }
-    public List<Position[]> maximizeScore() {
+
+    private void swapPositions(Position pos1, Position pos2) {
+        if (speelbord.getCellAt(pos1) == null || speelbord.getCellAt(pos2) == null) {
+            return;
+        }
+        Candy temp = speelbord.getCellAt(pos1);
+        speelbord.replaceCellAt(pos1, speelbord.getCellAt(pos2));
+        speelbord.replaceCellAt(pos2, temp);
+    }
+
+    /*public List<Position[]> maximizeScore() {
         List<Position[]> bestSequence = new ArrayList<>();
         List<Position[]> currentSequence = new ArrayList<>();
 
@@ -169,7 +184,7 @@ public class model {
                 }
                 currentSequence.remove(currentSequence.size() - 1);
             }
-            swapPositions(swap[0], swap[1]); // undo the swap
+            swapPositions(swap[0], swap[1]);
         }
 
         return bestSequence;
@@ -192,14 +207,10 @@ public class model {
         boolean matchExists = !findAllMatches().isEmpty();
         swapPositions(pos1, pos2); // undo the swap
         return matchExists;
-    }
+    }*/
 
-    private void swapPositions(Position pos1, Position pos2) {
-        Candy temp = speelbord.getCellAt(pos1);
-        speelbord.replaceCellAt(pos1, speelbord.getCellAt(pos2));
-        speelbord.replaceCellAt(pos2, temp);
-    }
 
+/*
     private int getScoreFromSequence(List<Position[]> sequence) {
         int originalScore = getScore();
         for (Position[] swap : sequence) {
@@ -208,11 +219,12 @@ public class model {
         }
         int score = getScore();
         for (int i = sequence.size() - 1; i >= 0; i--) {
-            swapPositions(sequence.get(i)[0], sequence.get(i)[1]); // undo the swap
+            swapPositions(sequence.get(i)[0], sequence.get(i)[1]);
+
         }
         setScore(originalScore);
         return score;
-    }
+    }*/
 
     public String getSpeler() {
         return Speler;

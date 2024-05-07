@@ -34,7 +34,6 @@ public class candyCrushController {
 
     private void reset() {
         model.reset();
-        candyCrushView.updateView();
         Score.setText(String.valueOf(model.getScore()));
         update();
     }
