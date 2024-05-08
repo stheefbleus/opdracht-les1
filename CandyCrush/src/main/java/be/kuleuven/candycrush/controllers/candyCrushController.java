@@ -26,7 +26,6 @@ public class candyCrushController {
     @FXML
     public void initialize(){
         model = new model("Default Player");
-        model.updateBoard();
         candyCrushView = new candyCrushView(model);
         speelbord.getChildren().add(candyCrushView);
         reset.setOnAction(e->reset());
@@ -40,11 +39,26 @@ public class candyCrushController {
         Score.setText(String.valueOf(model.getScore()));
     }
 
+    private Position lastClickedPosition = null;
+
     public void klik(MouseEvent e){
         int row = (int) e.getX()/ candyCrushView.getWidthCandy();
         int col = (int) e.getY() / candyCrushView.getHeightCandy();
-        model.klik(row,col);
-        candyCrushView.updateView();
-        Score.setText(String.valueOf(model.getScore()));
+        Position clickedPosition = new Position(col, row, model.getBoardsize());
+
+        if (lastClickedPosition == null) {
+            lastClickedPosition = clickedPosition;
+        } else {
+            int rowDiff = Math.abs(lastClickedPosition.rijNummer() - clickedPosition.rijNummer());
+            int colDiff = Math.abs(lastClickedPosition.kolomNummer() - clickedPosition.kolomNummer());
+
+            if ((rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1)) {
+                model.swapPositions(lastClickedPosition, clickedPosition);
+                model.updateBoard();
+                candyCrushView.updateView();
+                Score.setText(String.valueOf(model.getScore()));
+            }
+            lastClickedPosition = null;
+        }
     }
 }

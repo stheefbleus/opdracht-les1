@@ -15,9 +15,6 @@ public class model {
     private board<Candy> speelbord;
     private int Score;
     private Boardsize boardsize;
-
-
-
     public sealed interface Candy permits NormalCandy,gummyBeertje,jollyRanger,dropVeter,Pèche{}
     public record NormalCandy(int color) implements Candy{
         public NormalCandy{
@@ -35,6 +32,7 @@ public class model {
         speelbord = new board<>(boardsize);
         Score = 0;
         genSpeelbord();
+        updateBoard();
     }
 
     public void genSpeelbord() {
@@ -62,15 +60,6 @@ public class model {
                     throw new IllegalStateException("Unexpected value: " + randomGetal);
             }
             speelbord.replaceCellAt(pos, candy);
-        }
-    }
-    public void klik(int x, int y){
-        Position pos = new Position(y, x, boardsize);
-        Position nextPos = new Position(y, x + 1, boardsize);
-
-        if (nextPos.kolomNummer() < boardsize.width()) {
-            swapPositions(pos, nextPos);
-            updateBoard();
         }
     }
 
@@ -134,7 +123,7 @@ public class model {
 
         Position abovePos = new Position(pos.rijNummer() - 1, pos.kolomNummer(), pos.boardSize());
 
-        if (abovePos.rijNummer() >= 0 && speelbord.getCellAt(abovePos) != null) {
+        if (abovePos.rijNummer() >= 0) {
             speelbord.replaceCellAt(pos, speelbord.getCellAt(abovePos));
             speelbord.replaceCellAt(abovePos, null);
         }
@@ -162,7 +151,7 @@ public class model {
         return true;
     }
 
-    private void swapPositions(Position pos1, Position pos2) {
+    public void swapPositions(Position pos1, Position pos2) {
         if (speelbord.getCellAt(pos1) == null || speelbord.getCellAt(pos2) == null) {
             return;
         }
@@ -211,10 +200,7 @@ public class model {
         boolean matchExists = !findAllMatches().isEmpty();
         swapPositions(pos1, pos2); // undo the swap
         return matchExists;
-    }*/
-
-
-/*
+    }
     private int getScoreFromSequence(List<Position[]> sequence) {
         int originalScore = getScore();
         for (Position[] swap : sequence) {
@@ -233,7 +219,9 @@ public class model {
     public String getSpeler() {
         return Speler;
     }
-    public board<Candy> getSpeelbord() { return speelbord; }
+    public board<Candy> getSpeelbord() {
+        return speelbord;
+    }
     public int getScore() {
         return Score;
     }
