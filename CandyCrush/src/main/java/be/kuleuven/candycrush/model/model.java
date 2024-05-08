@@ -65,6 +65,7 @@ public class model {
         }
     }
     public void klik(int x, int y){
+        System.out.println("x: " + x + ", y: " + y);
         Position pos = new Position(x, y, boardsize);
         Stream<Position> stream = pos.walkRight();
         Position nextPos = stream.findFirst().orElse(null);
@@ -75,8 +76,12 @@ public class model {
     }
 
     public boolean firstTwoHaveSameCandy(Candy candy, Stream<Position> positions) {
-        List<Position> positionList = positions.limit(2).collect(Collectors.toList());
-        return positionList.size() == 2 && positionList.stream().allMatch(pos -> speelbord.getCellAt(pos).equals(candy));
+        List<Position> positionList = positions.limit(2).toList();
+        if(positionList.size() < 2) {
+            return false;
+        }
+        return positionList.stream()
+                .allMatch(pos -> speelbord.getCellAt(pos) != null && speelbord.getCellAt(pos).equals(candy));
     }
 
     public Stream<Position> horizontalStartingPositions() {
@@ -145,14 +150,13 @@ public class model {
             return false;
         }
 
-        for (List<Position> match : matches) {
+        matches.stream().forEach(match -> {
             clearMatch(new ArrayList<>(match));
-            for (Position pos : match) {
-                fallDownTo(pos);
-            }
-        }
+            match.stream().filter(pos -> pos.rijNummer() > 0).forEach(this::fallDownTo);
+        });
+
         if (!findAllMatches().isEmpty()) {
-            updateBoard();
+            return updateBoard();
         }
 
         return true;

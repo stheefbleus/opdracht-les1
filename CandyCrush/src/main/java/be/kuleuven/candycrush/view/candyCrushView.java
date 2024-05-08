@@ -81,6 +81,5 @@ public class candyCrushView extends Region {
         double x = candy.getBoundsInParent().getMinX();
         double y = candy.getBoundsInParent().getMinY();
         model.klik((int) x, (int) y);
-        updateView();
     }
 }

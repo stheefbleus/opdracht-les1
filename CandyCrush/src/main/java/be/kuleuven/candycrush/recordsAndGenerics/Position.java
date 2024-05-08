@@ -69,23 +69,19 @@ public record Position(int rijNummer, int kolomNummer, Boardsize boardSize){
     }
 
     public Stream<Position> walkLeft() {
-        return Stream.iterate(this, pos -> new Position(pos.rijNummer, pos.kolomNummer - 1, pos.boardSize))
-                .takeWhile(pos -> pos.kolomNummer >= 0);
+        return Stream.iterate(this, pos -> pos.kolomNummer > 0, pos -> new Position(pos.rijNummer, pos.kolomNummer - 1, pos.boardSize));
     }
 
     public Stream<Position> walkRight() {
-        return Stream.iterate(this, pos -> new Position(pos.rijNummer, pos.kolomNummer + 1, pos.boardSize))
-                .takeWhile(pos -> pos.kolomNummer < pos.boardSize.width());
+        return Stream.iterate(this, pos -> pos.kolomNummer < pos.boardSize.width() - 1, pos -> new Position(pos.rijNummer, pos.kolomNummer + 1, pos.boardSize));
     }
 
     public Stream<Position> walkUp() {
-        return Stream.iterate(this, pos -> new Position(pos.rijNummer - 1, pos.kolomNummer, pos.boardSize))
-                .takeWhile(pos -> pos.rijNummer >= 0);
+        return Stream.iterate(this, pos -> pos.rijNummer > 0, pos -> new Position(pos.rijNummer - 1, pos.kolomNummer , pos.boardSize));
     }
 
     public Stream<Position> walkDown() {
-        return Stream.iterate(this, pos -> new Position(pos.rijNummer + 1, pos.kolomNummer, pos.boardSize))
-                .takeWhile(pos -> pos.rijNummer < pos.boardSize.height());
+        return Stream.iterate(this, pos -> pos.rijNummer < pos.boardSize.height() - 1, pos -> new Position(pos.rijNummer + 1, pos.kolomNummer , pos.boardSize));
     }
 
-}
+    }

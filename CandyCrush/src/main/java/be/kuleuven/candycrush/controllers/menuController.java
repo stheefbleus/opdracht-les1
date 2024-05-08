@@ -33,7 +33,7 @@ public class menuController {
 
     public void inDruk(ActionEvent e) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("candyCrush-view.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/be/kuleuven/candycrush/candyCrush-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 800, 600);
             Stage stage = (Stage) btn.getScene().getWindow();
             stage.setTitle("current player: "+ speler.getText());

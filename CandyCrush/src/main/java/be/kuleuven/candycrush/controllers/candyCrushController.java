@@ -28,17 +28,17 @@ public class candyCrushController {
         candyCrushView = new candyCrushView(model);
         speelbord.getChildren().add(candyCrushView);
         reset.setOnAction(e->reset());
-        reset();
-
-    }
-
-    private void reset() {
-        model.reset();
         Score.setText(String.valueOf(model.getScore()));
         update();
     }
 
+    private void reset() {
+        model.reset();
+        update();
+    }
+
     public void update(){
+        model.updateBoard();
         candyCrushView.updateView();
     }
 }
