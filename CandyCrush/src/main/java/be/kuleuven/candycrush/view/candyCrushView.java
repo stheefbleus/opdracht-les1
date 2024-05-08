@@ -71,15 +71,15 @@ public class candyCrushView extends Region {
 
             if(candyModel != null){
                 Node candy = makeCandyShape(pos, candyModel);
-                candy.setOnMouseClicked(e -> klik(e));
                 getChildren().add(candy);
             }
         }
     }
-    public void klik(MouseEvent e){
-        Node candy = (Node) e.getSource();
-        double x = candy.getBoundsInParent().getMinX();
-        double y = candy.getBoundsInParent().getMinY();
-        model.klik((int) x, (int) y);
+    public int getWidthCandy() {
+        return widthCandy;
+    }
+
+    public int getHeightCandy() {
+        return heightCandy;
     }
 }

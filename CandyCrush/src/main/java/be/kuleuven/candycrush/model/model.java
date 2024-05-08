@@ -65,11 +65,10 @@ public class model {
         }
     }
     public void klik(int x, int y){
-        System.out.println("x: " + x + ", y: " + y);
-        Position pos = new Position(x, y, boardsize);
-        Stream<Position> stream = pos.walkRight();
-        Position nextPos = stream.findFirst().orElse(null);
-        if (nextPos != null) {
+        Position pos = new Position(y, x, boardsize);
+        Position nextPos = new Position(y, x + 1, boardsize);
+
+        if (nextPos.kolomNummer() < boardsize.width()) {
             swapPositions(pos, nextPos);
             updateBoard();
         }
@@ -124,6 +123,7 @@ public class model {
         Position pos = match.get(0);
         speelbord.replaceCellAt(pos, null);
         match.remove(0);
+        setScore(getScore() + 1);
 
         clearMatch(match);
     }
@@ -247,5 +247,6 @@ public class model {
         speelbord = new board<>(boardsize);
         setScore(0);
         genSpeelbord();
+        updateBoard();
     }
 }
