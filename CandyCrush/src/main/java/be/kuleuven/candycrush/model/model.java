@@ -82,12 +82,12 @@ public class model {
 
     public List<Position> longestMatchToRight(Position pos) {
         Candy candy = speelbord.getCellAt(pos);
-        return pos.walkRight().takeWhile(posi-> speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).toList();
+        return pos.walkRight().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).toList();
     }
 
     public List<Position> longestMatchDown(Position pos) {
         Candy candy = speelbord.getCellAt(pos);
-        return pos.walkDown().takeWhile(posi-> speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).toList();
+        return pos.walkDown().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).toList();
     }
 
     public Set<List<Position>> findAllMatches() {
@@ -102,7 +102,9 @@ public class model {
                 matches.add(verticalMatch);
             }
         });
-        return matches;
+        return matches.stream().filter(match -> matches.stream()
+                        .noneMatch(longerMatch -> longerMatch.size() > match.size() && longerMatch.containsAll(match)))
+                .collect(Collectors.toSet());
     }
     public void clearMatch(List<Position> match){
         List<Position> matches = new ArrayList<>(match);
@@ -154,7 +156,7 @@ public class model {
         speelbord.replaceCellAt(pos2, temp);
     }
 
-    /*public List<Position[]> maximizeScore() {
+    public List<Position[]> maximizeScore() {
         List<Position[]> bestSequence = new ArrayList<>();
         List<Position[]> currentSequence = new ArrayList<>();
 
@@ -208,7 +210,7 @@ public class model {
         }
         setScore(originalScore);
         return score;
-    }*/
+    }
 
     public String getSpeler() {
         return Speler;
