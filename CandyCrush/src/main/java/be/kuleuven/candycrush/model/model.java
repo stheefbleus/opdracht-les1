@@ -82,12 +82,12 @@ public class model {
 
     public List<Position> longestMatchToRight(Position pos) {
         Candy candy = speelbord.getCellAt(pos);
-        return pos.walkRight().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi).equals(candy)).toList();
+        return pos.walkRight().takeWhile(posi-> speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).toList();
     }
 
     public List<Position> longestMatchDown(Position pos) {
         Candy candy = speelbord.getCellAt(pos);
-        return pos.walkDown().takeWhile(posi-> speelbord.getCellAt(posi) != null && speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi).equals(candy)).toList();
+        return pos.walkDown().takeWhile(posi-> speelbord.getCellAt(pos) != null && speelbord.getCellAt(posi) != null && speelbord.getCellAt(posi).equals(candy)).toList();
     }
 
     public Set<List<Position>> findAllMatches() {
@@ -104,50 +104,44 @@ public class model {
         });
         return matches;
     }
-    public void clearMatch(List<Position> match) {
-        if (match.isEmpty()) {
+    public void clearMatch(List<Position> match){
+        List<Position> matches = new ArrayList<>(match);
+        if(matches.isEmpty()){
             return;
         }
-
-        Position pos = match.get(0);
+        Position pos = matches.get(0);
         speelbord.replaceCellAt(pos, null);
-        match.remove(0);
-        setScore(getScore() + 1);
-
-        clearMatch(match);
+        fallDownTo(pos);
+        matches.remove(0);
+        clearMatch(matches);
     }
-    public void fallDownTo(Position pos) {
-        if (speelbord.getCellAt(pos) != null) {
+
+    public void fallDownTo(Position pos){
+        if(pos.rijNummer() == 0){
             return;
         }
-
-        Position abovePos = new Position(pos.rijNummer() - 1, pos.kolomNummer(), pos.boardSize());
-
-        if (abovePos.rijNummer() >= 0) {
-            speelbord.replaceCellAt(pos, speelbord.getCellAt(abovePos));
-            speelbord.replaceCellAt(abovePos, null);
+        Position above = new Position(pos.rijNummer() - 1, pos.kolomNummer(), pos.boardSize());
+        if(speelbord.getCellAt(above) == null){
+            fallDownTo(above);
         }
-
-        if (abovePos.rijNummer() > 0) {
-            fallDownTo(abovePos);
+        if(speelbord.getCellAt(above) != null){
+            speelbord.replaceCellAt(pos, speelbord.getCellAt(above));
+            speelbord.replaceCellAt(above, null);
+            fallDownTo(above);
+        }else{
+            fallDownTo(above);
         }
     }
-    public boolean updateBoard() {
-        Set<List<Position>> matches = findAllMatches();
 
-        if (matches.isEmpty()) {
+    public boolean updateBoard(){
+        Set<List<Position>> matches = findAllMatches();
+        if(matches.isEmpty()){
             return false;
         }
-
-        matches.stream().forEach(match -> {
-            clearMatch(new ArrayList<>(match));
-            match.stream().filter(pos -> pos.rijNummer() > 0).forEach(this::fallDownTo);
-        });
-
-        if (!findAllMatches().isEmpty()) {
-            return updateBoard();
-        }
-
+        List<Position> match = matches.iterator().next();
+        clearMatch(match);
+        updateBoard();
+        setScore(getScore() + match.size());
         return true;
     }
 
