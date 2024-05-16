@@ -31,6 +31,7 @@ public class model {
         Score = 0;
         genSpeelbord();
         updateBoard();
+        Score = 0;
     }
 
     public void genSpeelbord() {
@@ -89,18 +90,39 @@ public class model {
     }
 
     public Set<List<Position>> findAllMatches() {
-        Set<List<Position>> matches = new HashSet<>();
-        Stream.concat(horizontalStartingPositions(), verticalStartingPositions()).forEach(pos -> {
+        Set<List<Position>> horizontalMatches = new HashSet<>();
+        Set<List<Position>> verticalMatches = new HashSet<>();
+        Set<List<Position>> allMatches = new HashSet<>();
+
+        horizontalStartingPositions().forEach(pos -> {
             List<Position> horizontalMatch = longestMatchToRight(pos);
             if (horizontalMatch.size() >= 3) {
-                matches.add(horizontalMatch);
-            }
-            List<Position> verticalMatch = longestMatchDown(pos);
-            if (verticalMatch.size() >= 3) {
-                matches.add(verticalMatch);
+                horizontalMatches.add(horizontalMatch);
             }
         });
-        return matches.stream().filter(match -> matches.stream()
+
+        verticalStartingPositions().forEach(pos -> {
+            List<Position> verticalMatch = longestMatchDown(pos);
+            if (verticalMatch.size() >= 3) {
+                verticalMatches.add(verticalMatch);
+            }
+        });
+
+        for (List<Position> hMatch : horizontalMatches) {
+            for (List<Position> vMatch : verticalMatches) {
+                List<Position> intersection = hMatch.stream()
+                        .filter(vMatch::contains)
+                        .collect(Collectors.toList());
+                if (!intersection.isEmpty()) {
+                    allMatches.add(intersection);
+                }
+            }
+        }
+
+        allMatches.addAll(horizontalMatches);
+        allMatches.addAll(verticalMatches);
+
+        return allMatches.stream().filter(match -> allMatches.stream()
                         .noneMatch(longerMatch -> longerMatch.size() > match.size() && longerMatch.containsAll(match)))
                 .collect(Collectors.toSet());
     }
@@ -164,16 +186,20 @@ public class model {
 
     public Solution maximizeScore() {
         Solution initialSolution = new Solution(0, new ArrayList<>(), speelbord);
-        Solution bestSoFar = null;
-        ArrayList<Pair<Position,Position>> swaps = getAllValidSwaps(initialSolution.getBoard());
+        Solution bestSoFar = findBestSolution(initialSolution, null);
+        return bestSoFar;
+    }
 
-        if(swaps.isEmpty()) {
+    public Solution findBestSolution(Solution initialSolution,Solution bestSoFar){
+        if(getAllValidSwaps(initialSolution.getBoard()).isEmpty()) {
             if (bestSoFar == null || initialSolution.isBetterThan(bestSoFar)) {
                 return initialSolution;
             } else {
                 return bestSoFar;
             }
-        } else {
+        }
+        else {
+            ArrayList<Pair<Position,Position>> swaps = getAllValidSwaps(initialSolution.getBoard());
             for(Pair<Position,Position> swap : swaps) {
                 board<Candy> newBoard = new board<>(initialSolution.getBoard().getSize());
                 initialSolution.getBoard().copyTo(newBoard);
@@ -226,5 +252,6 @@ public class model {
         setScore(0);
         genSpeelbord();
         updateBoard();
+        setScore(0);
     }
 }
