@@ -1,5 +1,6 @@
 package be.kuleuven.candycrush.controllers;
 
+import be.kuleuven.candycrush.recordsAndGenerics.Boardsize;
 import be.kuleuven.candycrush.recordsAndGenerics.Position;
 import be.kuleuven.candycrush.view.candyCrushView;
 import javafx.event.ActionEvent;
@@ -53,12 +54,17 @@ public class candyCrushController {
             int colDiff = Math.abs(lastClickedPosition.kolomNummer() - clickedPosition.kolomNummer());
 
             if ((rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1)) {
-                model.swapPositions(lastClickedPosition, clickedPosition);
-                model.updateBoard();
-                candyCrushView.updateView();
-                Score.setText(String.valueOf(model.getScore()));
+                if (model.matchAfterSwitch(lastClickedPosition, clickedPosition)) {
+                    model.swapPositions(lastClickedPosition, clickedPosition);
+                    model.updateBoard();
+                    candyCrushView.updateView();
+                    Score.setText(String.valueOf(model.getScore()));
+                }
             }
             lastClickedPosition = null;
         }
     }
+
+
+
 }

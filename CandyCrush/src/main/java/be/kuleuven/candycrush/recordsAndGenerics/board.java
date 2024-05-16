@@ -54,4 +54,7 @@ public class board<T> {
             }
         }
     }
+    public Map<Position,T> getBoardCells(){
+        return this.boardMap;
+    }
 }

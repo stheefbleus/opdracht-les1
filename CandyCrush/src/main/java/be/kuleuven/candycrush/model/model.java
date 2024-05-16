@@ -2,11 +2,9 @@ package be.kuleuven.candycrush.model;
 import be.kuleuven.candycrush.recordsAndGenerics.board;
 import be.kuleuven.candycrush.recordsAndGenerics.Boardsize;
 import be.kuleuven.candycrush.recordsAndGenerics.Position;
+import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -106,6 +104,7 @@ public class model {
                         .noneMatch(longerMatch -> longerMatch.size() > match.size() && longerMatch.containsAll(match)))
                 .collect(Collectors.toSet());
     }
+
     public void clearMatch(List<Position> match){
         List<Position> matches = new ArrayList<>(match);
         if(matches.isEmpty()){
@@ -156,60 +155,55 @@ public class model {
         speelbord.replaceCellAt(pos2, temp);
     }
 
-    public List<Position[]> maximizeScore() {
-        List<Position[]> bestSequence = new ArrayList<>();
-        List<Position[]> currentSequence = new ArrayList<>();
-
-        for (Position[] swap : getAllValidSwaps()) {
-            swapPositions(swap[0], swap[1]);
-            updateBoard();
-            Set<List<Position>> matches = findAllMatches();
-            if (!matches.isEmpty()) {
-                int score = matches.stream().mapToInt(List::size).sum();
-                currentSequence.add(swap);
-                if (score > getScoreFromSequence(bestSequence)) {
-                    bestSequence.clear();
-                    bestSequence.addAll(currentSequence);
-                }
-                currentSequence.remove(currentSequence.size() - 1);
-            }
-            swapPositions(swap[0], swap[1]);
-        }
-
-        return bestSequence;
-    }
-
-    private Position[][] getAllValidSwaps() {
-        List<Position[]> swaps = new ArrayList<>();
-        for (Position pos : boardsize.positions()) {
-            for (Position neighbor : pos.neighborPositions()) {
-                if (matchAfterSwitch(pos, neighbor)) {
-                    swaps.add(new Position[]{pos, neighbor});
-                }
-            }
-        }
-        return swaps.toArray(new Position[0][0]);
-    }
-
-    private boolean matchAfterSwitch(Position pos1, Position pos2) {
+    public boolean matchAfterSwitch(Position pos1, Position pos2) {
         swapPositions(pos1, pos2);
         boolean matchExists = !findAllMatches().isEmpty();
-        swapPositions(pos1, pos2); // undo the swap
+        swapPositions(pos1, pos2);
         return matchExists;
     }
-    private int getScoreFromSequence(List<Position[]> sequence) {
-        int originalScore = getScore();
-        for (Position[] swap : sequence) {
-            swapPositions(swap[0], swap[1]);
-            updateBoard();
-        }
-        int score = getScore();
-        for (int i = sequence.size() - 1; i >= 0; i--) {
-            swapPositions(sequence.get(i)[0], sequence.get(i)[1]);
 
+    public Solution maximizeScore() {
+        Solution initialSolution = new Solution(0, new ArrayList<>(), speelbord);
+        Solution bestSoFar = null;
+        ArrayList<Pair<Position,Position>> swaps = getAllValidSwaps(initialSolution.getBoard());
+
+        if(swaps.isEmpty()) {
+            if (bestSoFar == null || initialSolution.isBetterThan(bestSoFar)) {
+                return initialSolution;
+            } else {
+                return bestSoFar;
+            }
+        } else {
+            for(Pair<Position,Position> swap : swaps) {
+                board<Candy> newBoard = new board<>(initialSolution.getBoard().getSize());
+                initialSolution.getBoard().copyTo(newBoard);
+                swapPositions(swap.getKey(), swap.getValue());
+                updateBoard();
+                int score = (int) newBoard.getBoardCells().values().stream()
+                        .filter(Objects::isNull).count();
+
+                ArrayList<Pair<Position,Position>> newMoves = new ArrayList<>(initialSolution.currentMoves());
+                newMoves.add(swap);
+
+                Solution newSolution = new Solution(score, newMoves, newBoard);
+                if (bestSoFar == null || newSolution.isBetterThan(bestSoFar)) {
+                    bestSoFar = newSolution;
+                }
+            }
+            return bestSoFar;
         }
-        setScore(originalScore);
-        return score;
+    }
+
+    public ArrayList<Pair<Position,Position>> getAllValidSwaps(board<Candy> board){
+        Set<Pair<Position,Position>> swaps = new HashSet<>();
+        for (Position p : board.getSize().positions()) {
+            for (Position q : p.neighborPositions()) {
+                if (matchAfterSwitch(p, q)) {
+                    swaps.add(new Pair<>(p, q));
+                }
+            }
+        }
+        return new ArrayList<>(swaps);
     }
 
     public String getSpeler() {
